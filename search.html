@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Waspberry</title>
+    <style>
+        body {
+            font-family:  sans-serif;
+            margin: 40px; margin-top: 5px; min-height: 100vh; display: flex; align-items: flex-start; justify-content: center;
+        }
+
+        h1 {
+            margin-bottom: 10px; color: white; display: none;
+        }
+
+        input {
+            width: 100%;
+            font-size: 16px;
+        }
+
+
+        table {
+            margin-top: 25px;
+            border-collapse: collapse;
+            width: 100%;
+            background: white;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            vertical-align: top;
+        }
+
+        th {
+            background: linear-gradient(white, #ca1045, #df6889, #ca1045, #480619);
+        }
+
+        tr:hover {
+            background-color: grey;
+        }
+td {            padding: 10px;
+   }
+        .url {
+            font-size: 13px;
+            color: #ffb900;
+        }
+
+        .title a {
+            font-weight: bold;
+            color: maroon;
+            text-decoration: none;
+        }
+
+        .title a:hover {
+            text-decoration: underline;
+        }
+
+        .snippet {
+            color: #444;
+            font-size: 14px;
+        }
+
+        .score {
+            font-size: 12px;
+            color: #888;
+        } .left {text-align: left} .box {width: 80%; padding: 20px;} td {background: black; border: 1px solid grey;}
+    </style>
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        display: flex;
+        justify-content: center;
+        align-items: flex-start;
+      }
+      
+      p {font-size: 40px; margin-left: 5px;}
+       .box {margin-top: 21px;} .right {text-align: right;}
+       tbody, td {background: grey;}
+    </style>
+</head>
+<body>
+<div class="box">
+    <img src="https://waspberry.com/logo-real-logo.png" height="40">
+    <form action="search" method="get" class="search-box">
+      <input type="text" name="q" placeholder="Explore the web..." required id="searchBox">
+      <button type="submit">Go</button>
+    </form><script src="https://bloodlime.neocities.org/tools.js"></script>
+
+<table>
+    <thead>
+        <tr>
+            <th class="left">Result</th>
+            <th class="right">Score</th>
+        </tr>
+    </thead>
+    <tbody id="resultsBody">
+    </tbody>
+</table>
+<script>
+function getQueryParam(name) {
+    const params = new URLSearchParams(window.location.search);
+    return params.get(name);
+}
+
+async function doSearch(queryOverride = null) {
+    const input = document.getElementById("searchBox");
+    const query = queryOverride || input.value.trim();
+    if (!query) return;
+
+    const newUrl = `${window.location.pathname}?q=${encodeURIComponent(query)}`;
+    window.history.pushState({}, "", newUrl);
+    input.value = query;
+
+    const tbody = document.getElementById("resultsBody");
+    tbody.innerHTML = "<tr><td colspan='2'>Loading...</td></tr>";
+
+    try {
+        const res = await fetch(`https://dcm3qw-5000.csb.app/api/search?q=${encodeURIComponent(query)}`);
+        const data = await res.json();
+
+        tbody.innerHTML = "";
+
+        if (!data || data.length === 0) {
+            tbody.innerHTML = "<tr><td colspan='2'>No results found</td></tr>";
+            return;
+        }
+
+        data.forEach(item => {
+            const row = document.createElement("tr");
+
+            const resultCell = document.createElement("td");
+            const scoreCell = document.createElement("td");
+
+            resultCell.innerHTML = `
+                <div class="title">
+                    <a href="${item.url}" target="_blank">${escapeHTML(item.title)}</a>
+                </div>
+                <div class="url">${item.url}</div>
+                <div class="snippet">${escapeHTML(item.snippet || "")}</div>
+            `;
+
+            scoreCell.innerHTML = `
+                <div class="score">${(Number(item.score) || 0).toFixed(1)}</div>
+            `;
+
+            row.appendChild(resultCell);
+            row.appendChild(scoreCell);
+            tbody.appendChild(row);
+        });
+
+    } catch (err) {
+        console.error(err);
+        tbody.innerHTML = "<tr><td colspan='2'>Error loading results</td></tr>";
+    }
+}
+
+function escapeHTML(str) {
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const input = document.getElementById("searchBox");
+
+    input.addEventListener("keydown", e => {
+        if (e.key === "Enter") doSearch();
+    });
+
+    const q = getQueryParam("q");
+    if (q) doSearch(q);
+});
+
+document.addEventListener("keydown", (e) => {
+    const active = document.activeElement;
+    const isTyping = active && (
+        active.tagName === "INPUT" ||
+        active.tagName === "TEXTAREA" ||
+        active.isContentEditable
+    );
+
+    if (e.key === ";" && !isTyping) {
+        e.preventDefault();
+        document.getElementById("searchBox").focus();
+    }
+});
+</script></div>
+<footer>&copy; Waspberry. All rights reserved.</footer>
+</body>
+</html>
