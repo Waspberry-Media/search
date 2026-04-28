@@ -1,2 +1,2 @@
 document.title = "Waspberry";
-document.innerHTML += "<footer>&copy; Waspberry. All rights reserved.</footer>";
+document.body.innerHTML += "<footer>&copy; Waspberry. All rights reserved.</footer>";
