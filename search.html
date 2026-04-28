@@ -6,7 +6,7 @@
     <style>
         body {
             font-family:  sans-serif;
-            margin: 40px; margin-top: 5px; min-height: 100vh; text-align: center;
+            margin: 40px; margin-top: 5px; min-height: 100vh; align-items: center; display: flex; justify-content: center;
         }
 
         h1 {
@@ -64,6 +64,7 @@ td {            padding: 10px;
             font-size: 12px;
             color: #888;
         } .left {text-align: left} .box {width: 80%; padding: 20px;} td {background: black; border: 1px solid grey;}
+        footer {display: none;}
     </style>
     <style>
       body {
@@ -184,6 +185,15 @@ document.addEventListener("keydown", (e) => {
         e.preventDefault();
         document.getElementById("searchBox").focus();
     }
+});
+    document.addEventListener("keydown", (e) => {
+        if (e.key === "=") {
+        e.preventDefault();
+        document.querySelector("footer").style.display = "block";
+    }
+        if (e.key === "/") {
+        e.preventDefault();
+        document.querySelector("footer").style.display = "block";
 });
 </script></div>
 <footer>&copy; Waspberry. All rights reserved.</footer>
